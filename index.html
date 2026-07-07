@@ -165,6 +165,19 @@ textarea.in{min-height:72px;resize:vertical}
 .agerow .aid{font-family:var(--mono);font-size:11px;color:var(--pine-40)}
 .agerow .adays{font-family:var(--mono);font-weight:600;color:var(--signal);white-space:nowrap}
 
+/* walk performance by period */
+.perfrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.perfrow:last-child{border-bottom:none}
+.perfrow.cur{background:linear-gradient(90deg,var(--lane-soft),transparent);border-radius:8px;padding-left:8px;margin-left:-8px}
+.perfrow .plabel{width:34%;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.perfrow .plabel small{display:block;font-size:10px;color:var(--pine-40);font-weight:500}
+.perfbar{flex:1;height:10px;background:var(--mist);border-radius:999px;overflow:hidden}
+.perfbar i{display:block;height:100%;border-radius:999px;background:var(--lane)}
+.perfrow .pstats{font-family:var(--mono);font-size:11px;color:var(--pine-70);white-space:nowrap;text-align:right}
+.perfrow .pstats b{color:var(--pine);font-weight:600}
+.delta-up{color:#2E5C40}
+.delta-down{color:var(--signal)}
+
 /* walkers / certification */
 .tier{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;letter-spacing:.03em;text-transform:uppercase}
 .t-Bronze{background:#EFE0D1;color:#8A5A2B}
@@ -256,6 +269,14 @@ footer a{color:inherit;text-decoration:none}
       <select class="in" id="walkMin"></select>
       <div style="height:16px"></div>
       <button class="btn btn-lane" onclick="startWalk()">Start the W — Walk</button>
+    </div>
+
+    <div class="card">
+      <h2 class="sec" style="font-size:17px">Walk performance</h2>
+      <p class="sec-sub" style="margin-bottom:10px">How the organization is walking — by period.</p>
+      <div class="chips" id="perChips"></div>
+      <div class="statchips" id="perfSummary" style="margin-top:14px"></div>
+      <div id="perfList"></div>
     </div>
   </div>
 
@@ -381,6 +402,18 @@ footer a{color:inherit;text-decoration:none}
 <section id="tab-walkers" class="tabpane">
   <h2 class="sec">Walkers &amp; certification</h2>
   <p class="sec-sub">Each completed walk earns a scorecard out of 100. Points accumulate toward certification.</p>
+
+  <div class="card">
+    <h2 class="sec" style="font-size:17px">Walker performance</h2>
+    <p class="sec-sub" style="margin-bottom:10px">Participation and per-person statistics by period.</p>
+    <div class="chips" id="wkPerChips"></div>
+    <div class="statchips" id="wkSummary" style="margin-top:14px"></div>
+    <div id="wkPersonList"></div>
+    <h2 class="sec" style="font-size:15px;margin-top:16px">Participation trend</h2>
+    <div id="wkPartList"></div>
+  </div>
+
+  <h2 class="sec" style="font-size:17px">All-time leaderboard</h2>
   <div id="walkerBoard"></div>
   <div class="card">
     <h2 class="sec" style="font-size:17px">Certification ladder</h2>
@@ -545,7 +578,8 @@ const ORG_CONFIG = {
     "Office / Admin","Canteen & Welfare","Compound / Exterior"
   ],
   walkMinutes: [60, 30, 45, 90],
-  analyticsUrl: "analytics/analytics.json"
+  analyticsUrl: "analytics/analytics.json",
+  demoData: false   // false = fresh start for a new organization; true = load sample data for demos/training
 };
 
 /* Derived from the framework — never hard-coded elsewhere */
@@ -648,9 +682,9 @@ function setSync(on){
   document.getElementById("dataNote").textContent = on ? "Synced to cloud" : (CONFIG.SCRIPT_URL ? "Sync pending" : "Local data");
 }
 
-/* ---------- demo seed ---------- */
+/* ---------- demo seed (only when ORG_CONFIG.demoData = true) ---------- */
 function seed(){
-  if(DB.length) return;
+  if(!ORG_CONFIG.demoData || DB.length) return;
   const now = Date.now(), d = 864e5;
   const demo = [
     ["Safety","High","Sewing","Emergency exit near line 4 partially blocked by fabric rolls.","WIP overflow — no designated staging near line 4.","Relocate WIP racks; mark exit lane with floor tape.","Compliance Team","Solving",2,"R. Karim",null],
@@ -760,6 +794,7 @@ function submitWalk(){
   document.getElementById("activeView").style.display="none";
   document.getElementById("startView").style.display="block";
   document.getElementById("walkObsList").innerHTML = '<div class="empty">Nothing captured yet — keep your eyes open.</div>';
+  renderPerformance();
   toast("Walk complete — " + n + " finding" + (n===1?"":"s") + " · " + rec.total + " pts");
   go("walkers", document.querySelector('nav button[data-tab="walkers"]'));
 }
@@ -886,6 +921,7 @@ function tierOf(pts){
   return null;
 }
 function renderWalkers(){
+  renderWalkerStats();
   const map = {};
   WALKS.forEach(w=>{
     if(!map[w.walker]) map[w.walker] = {walks:0, findings:0, pts:0};
@@ -1066,6 +1102,154 @@ function renderInsights(){
     : '<div class="empty">No high-priority findings aging in the pipeline.</div>';
 }
 
+/* ---------- walk performance by period (W · Walk discipline) ---------- */
+const PERIODS = { Weekly:{n:8}, Monthly:{n:6}, Quarterly:{n:4}, Yearly:{n:3} };
+let selPeriod = "Weekly";
+
+function periodRange(back, type){
+  const now = new Date();
+  let start, end, label, sub = "";
+  if(type==="Daily"){
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate()-back);
+    end = new Date(start.getFullYear(), start.getMonth(), start.getDate()+1);
+    label = back===0 ? "Today" : (back===1 ? "Yesterday" : start.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}));
+  } else if(type==="Weekly"){
+    const day = (now.getDay()+6)%7;                    // Monday = 0
+    const mon = new Date(now.getFullYear(), now.getMonth(), now.getDate()-day);
+    start = new Date(mon); start.setDate(mon.getDate()-7*back);
+    end = new Date(start); end.setDate(start.getDate()+7);
+    const f = d=>d.toLocaleDateString(undefined,{day:"numeric",month:"short"});
+    const last = new Date(end-1);
+    label = f(start)+" – "+f(last); sub = String(start.getFullYear());
+  } else if(type==="Monthly"){
+    start = new Date(now.getFullYear(), now.getMonth()-back, 1);
+    end = new Date(start.getFullYear(), start.getMonth()+1, 1);
+    label = start.toLocaleDateString(undefined,{month:"short",year:"numeric"});
+  } else if(type==="Quarterly"){
+    const q0 = Math.floor(now.getMonth()/3);
+    start = new Date(now.getFullYear(), (q0-back)*3, 1);
+    end = new Date(start.getFullYear(), start.getMonth()+3, 1);
+    label = "Q"+(Math.floor(start.getMonth()/3)+1)+" "+start.getFullYear();
+  } else { // Yearly
+    start = new Date(now.getFullYear()-back, 0, 1);
+    end = new Date(start.getFullYear()+1, 0, 1);
+    label = String(start.getFullYear());
+  }
+  return { start:+start, end:+end, label, sub, current: back===0 };
+}
+
+function periodStats(range){
+  const ws = WALKS.filter(w=>w.ts>=range.start && w.ts<range.end);
+  const walks = ws.length;
+  const findings = ws.reduce((a,w)=>a+(+w.findings||0),0);
+  const points = ws.reduce((a,w)=>a+(+w.total||0),0);
+  const walkers = new Set(ws.map(w=>w.walker)).size;
+  return { walks, findings, points, walkers, avgScore: walks ? Math.round(points/walks) : 0 };
+}
+
+function renderPerformance(){
+  // period selector chips
+  document.getElementById("perChips").innerHTML = Object.keys(PERIODS).map(p=>
+    `<button class="chip${p===selPeriod?" sel":""}" onclick="selPeriod='${p}';renderPerformance()">${p}</button>`).join("");
+
+  const n = PERIODS[selPeriod].n;
+  const rows = [];
+  for(let i=0;i<n;i++){
+    const r = periodRange(i, selPeriod);
+    rows.push({ ...r, ...periodStats(r) });
+  }
+
+  // summary — current period vs previous
+  const cur = rows[0], prev = rows[1] || {walks:0,findings:0,avgScore:0};
+  const delta = prev.walks ? Math.round((cur.walks-prev.walks)/prev.walks*100) : (cur.walks?100:0);
+  const dCls = delta>=0 ? "delta-up" : "delta-down";
+  const dArrow = delta>0 ? "▲" : (delta<0 ? "▼" : "–");
+  const unit = selPeriod.replace("ly","").toLowerCase(); // week / month / quarter / year
+  document.getElementById("perfSummary").innerHTML = `
+    <div class="statchip"><b>${cur.walks}</b><span>Walks this ${unit==="quarter"?"quarter":unit}</span></div>
+    <div class="statchip"><b>${cur.findings}</b><span>Findings captured</span></div>
+    <div class="statchip"><b>${cur.avgScore||"—"}</b><span>Avg walk score</span></div>
+    <div class="statchip"><b class="${dCls}" style="color:${delta>=0?"#7BC96F":"#F58A6A"}">${dArrow} ${Math.abs(delta)}%</b><span>vs previous ${unit}</span></div>`;
+
+  // period rows with walk-volume bars
+  const maxW = Math.max(1, ...rows.map(r=>r.walks));
+  document.getElementById("perfList").innerHTML = rows.some(r=>r.walks)
+    ? rows.map(r=>`<div class="perfrow${r.current?" cur":""}">
+        <span class="plabel">${r.label}${r.current?" · now":""}${r.sub?`<small>${r.sub}</small>`:""}</span>
+        <span class="perfbar"><i style="width:${Math.round(r.walks/maxW*100)}%"></i></span>
+        <span class="pstats"><b>${r.walks}</b> walk${r.walks===1?"":"s"} · ${r.findings} findings${r.walks?` · avg <b>${r.avgScore}</b>`:""}</span>
+      </div>`).join("")
+    : '<div class="empty">No walks recorded yet — start the first WISE Walk above.</div>';
+}
+
+/* ---------- walker performance statistics by period ---------- */
+const WPERIODS = { Daily:{n:7}, Weekly:{n:8}, Monthly:{n:6}, Quarterly:{n:4}, Yearly:{n:3} };
+let selWPeriod = "Weekly";
+
+function renderWalkerStats(){
+  document.getElementById("wkPerChips").innerHTML = Object.keys(WPERIODS).map(p=>
+    `<button class="chip${p===selWPeriod?" sel":""}" onclick="selWPeriod='${p}';renderWalkerStats()">${p}</button>`).join("");
+
+  const unitMap = {Daily:"day",Weekly:"week",Monthly:"month",Quarterly:"quarter",Yearly:"year"};
+  const unit = unitMap[selWPeriod];
+  const cur = periodRange(0, selWPeriod);
+  const prev = periodRange(1, selWPeriod);
+  const inRange = (w,r)=>w.ts>=r.start && w.ts<r.end;
+
+  // ----- current period summary: number of people + activity -----
+  const curW = WALKS.filter(w=>inRange(w,cur));
+  const prevW = WALKS.filter(w=>inRange(w,prev));
+  const people = new Set(curW.map(w=>w.walker)).size;
+  const prevPeople = new Set(prevW.map(w=>w.walker)).size;
+  const dP = prevPeople ? Math.round((people-prevPeople)/prevPeople*100) : (people?100:0);
+  const findings = curW.reduce((a,w)=>a+(+w.findings||0),0);
+  const points = curW.reduce((a,w)=>a+(+w.total||0),0);
+  document.getElementById("wkSummary").innerHTML = `
+    <div class="statchip"><b>${people}</b><span>People walked this ${unit}</span></div>
+    <div class="statchip"><b>${curW.length}</b><span>Walks completed</span></div>
+    <div class="statchip"><b>${findings}</b><span>Findings captured</span></div>
+    <div class="statchip"><b style="color:${dP>=0?"#7BC96F":"#F58A6A"}">${dP>0?"▲":(dP<0?"▼":"–")} ${Math.abs(dP)}%</b><span>People vs prev ${unit}</span></div>`;
+
+  // ----- per-person statistics for the current period -----
+  const pm = {};
+  curW.forEach(w=>{
+    if(!pm[w.walker]) pm[w.walker] = {walks:0, findings:0, points:0};
+    pm[w.walker].walks++; pm[w.walker].findings += +w.findings||0; pm[w.walker].points += +w.total||0;
+  });
+  // all-time points → certification tier badge per person
+  const allPts = {};
+  WALKS.forEach(w=>{ allPts[w.walker] = (allPts[w.walker]||0) + (+w.total||0); });
+  const persons = Object.entries(pm).sort((a,b)=>b[1].points-a[1].points);
+  document.getElementById("wkPersonList").innerHTML = persons.length
+    ? persons.map(([name,s],i)=>{
+        const t = tierOf(allPts[name]||0);
+        const avg = s.walks ? Math.round(s.points/s.walks) : 0;
+        return `<div class="wrow">
+          <div class="wrank">${i+1}</div>
+          <div class="wname"><b>${esc(name)}</b><small>${s.walks} walk${s.walks===1?"":"s"} · ${s.findings} findings · avg score ${avg}</small></div>
+          <span class="tier ${t?"t-"+t.tier:"t-none"}">${t?t.tier:"In training"}</span>
+          <div class="wpts">${s.points}<small>pts this ${unit}</small></div>
+        </div>`;}).join("")
+    : `<div class="empty">No walks this ${unit} yet.</div>`;
+
+  // ----- participation trend: number of people per period -----
+  const n = WPERIODS[selWPeriod].n;
+  const rows = [];
+  for(let i=0;i<n;i++){
+    const r = periodRange(i, selWPeriod);
+    const ws = WALKS.filter(w=>inRange(w,r));
+    rows.push({ ...r, people:new Set(ws.map(w=>w.walker)).size, walks:ws.length });
+  }
+  const maxP = Math.max(1, ...rows.map(r=>r.people));
+  document.getElementById("wkPartList").innerHTML = rows.some(r=>r.walks)
+    ? rows.map(r=>`<div class="perfrow${r.current?" cur":""}">
+        <span class="plabel">${r.label}${r.sub?`<small>${r.sub}</small>`:""}</span>
+        <span class="perfbar"><i style="width:${Math.round(r.people/maxP*100)}%"></i></span>
+        <span class="pstats"><b>${r.people}</b> ${r.people===1?"person":"people"} · ${r.walks} walk${r.walks===1?"":"s"}</span>
+      </div>`).join("")
+    : '<div class="empty">Participation will appear here after the first walks.</div>';
+}
+
 /* ---------- misc ---------- */
 let toastT;
 function toast(msg){
@@ -1073,10 +1257,10 @@ function toast(msg){
   t.textContent = msg; t.classList.add("show");
   clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("show"), 2400);
 }
-function renderAll(){ renderActions(); renderWalkList(); renderWalkers(); }
+function renderAll(){ renderActions(); renderWalkList(); renderWalkers(); renderPerformance(); }
 
 /* ---------- init ---------- */
-renderFramework(); loadLocal(); seed(); buildCatChips(); buildFilters(); renderActions(); renderWalkers(); pullRemote(); loadAnalytics();
+renderFramework(); loadLocal(); seed(); buildCatChips(); buildFilters(); renderActions(); renderWalkers(); renderPerformance(); pullRemote(); loadAnalytics();
 </script>
 </body>
 </html>
