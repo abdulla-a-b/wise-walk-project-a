@@ -1,1 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>WISE Walk™ — MBBC & Company</title>
+<meta name="description" content="WISE Walk™ — Walk with Purpose. Inspect with Curiosity. Solve with Intelligence. Execute with Excellence. By MBBC & Company.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --mist:#EDF1EC;--chalk:#FFFFFF;--pine:#17302A;--pine-70:#3C544D;--pine-40:#8AA098;
+  --lane:#F2A007;--lane-soft:#FCEBC7;--moss:#4C7A5E;--signal:#D64520;--line:#D6DED6;
+  --radius:14px;--shadow:0 1px 2px rgba(23,48,42,.06),0 6px 18px rgba(23,48,42,.07);
+  --display:'Saira Condensed',sans-serif;--body:'Public Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--body);background:var(--mist);color:var(--pine);min-height:100vh;padding-bottom:84px}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:15px;color:var(--pine)}
+:focus-visible{outline:3px solid var(--lane);outline-offset:2px}
+.lane{height:0;border-top:3px dashed var(--lane);opacity:.9}
 
+/* header */
+header{background:var(--pine);color:#F3F6F2;padding:14px 18px 12px;position:sticky;top:0;z-index:40}
+.brandrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;max-width:1060px;margin:0 auto}
+.wordmark{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.5px;line-height:1}
+.wordmark .tm{font-size:11px;vertical-align:super}
+.wordmark em{font-style:normal;color:var(--lane)}
+.byline{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#B9C8C0;white-space:nowrap}
+.syncdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#8AA098;margin-right:6px;vertical-align:middle}
+.syncdot.on{background:#7BC96F}
+header .lane{margin-top:10px;opacity:.55}
+
+/* layout */
+main{max-width:1060px;margin:0 auto;padding:18px 16px 30px}
+.tabpane{display:none}
+.tabpane.active{display:block;animation:rise .25s ease}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.tabpane.active{animation:none}}
+h2.sec{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.3px;text-transform:uppercase;margin:4px 0 4px}
+.sec-sub{font-size:13px;color:var(--pine-70);margin-bottom:12px}
+.card{background:var(--chalk);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+
+/* WISE strip (rendered from WISE_FRAMEWORK) */
+.wise-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin:10px 0 16px}
+.wise-strip::before{content:"";position:absolute;top:21px;left:12%;right:12%;border-top:3px dashed var(--lane)}
+.wstep{text-align:center;position:relative;padding:0 4px}
+.wstep b{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:var(--pine);color:var(--lane);font-family:var(--display);font-size:20px;font-weight:800;border:3px solid var(--lane);position:relative;z-index:1}
+.wstep span{display:block;margin-top:6px;font-size:12px;font-weight:600}
+.wstep small{display:block;font-size:10.5px;color:var(--pine-70);line-height:1.3;margin-top:2px}
+
+/* stage badges in the capture form */
+.stagehead{display:flex;align-items:center;gap:10px;margin:18px 0 2px}
+.stagehead:first-of-type{margin-top:6px}
+.stagebadge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--pine);color:var(--lane);font-family:var(--display);font-size:16px;font-weight:800;border:2.5px solid var(--lane);flex-shrink:0}
+.stagehead b{font-family:var(--display);font-size:16px;letter-spacing:.4px;text-transform:uppercase}
+.stagehead small{font-size:11.5px;color:var(--pine-40)}
+.stagebody{border-left:3px dashed var(--lane);margin-left:14px;padding-left:22px;padding-bottom:6px}
+.stagebody label.f:first-child{margin-top:6px}
+
+/* forms */
+label.f{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--pine-70);margin:12px 0 5px}
+.in{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:#FBFCFA}
+.in:focus{border-color:var(--lane);outline:none}
+textarea.in{min-height:72px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#FBFCFA;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:500;color:var(--pine-70)}
+.chip.sel{background:var(--pine);border-color:var(--pine);color:#fff}
+.chip.p-high.sel{background:var(--signal);border-color:var(--signal)}
+.chip.p-med.sel{background:var(--lane);border-color:var(--lane);color:var(--pine)}
+.chip.p-low.sel{background:var(--moss);border-color:var(--moss)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:11px;padding:13px 20px;font-size:15px;font-weight:700;transition:transform .08s ease}
+.btn:active{transform:scale(.98)}
+.btn-lane{background:var(--lane);color:var(--pine);width:100%}
+.btn-pine{background:var(--pine);color:#fff;width:100%}
+
+/* active walk */
+.walkbar{display:flex;align-items:center;gap:14px;background:var(--pine);color:#fff;border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+.timer{font-family:var(--mono);font-size:30px;font-weight:600;color:var(--lane);letter-spacing:1px;min-width:118px}
+.walkmeta{flex:1;min-width:0}
+.walkmeta b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.walkmeta span{font-size:12px;color:#B9C8C0}
+.endbtn{background:transparent;border:1.5px solid var(--lane);color:var(--lane);border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.photowrap{display:flex;align-items:center;gap:10px}
+.photoprev{width:52px;height:52px;border-radius:8px;object-fit:cover;border:1.5px solid var(--line);display:none}
+
+/* checklist */
+.ck{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:480px){.ck{grid-template-columns:1fr}}
+.ckitem{display:flex;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;background:#FBFCFA;color:var(--pine-70);cursor:pointer;user-select:none}
+.ckitem b{width:18px;height:18px;border:2px solid var(--pine-40);border-radius:5px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:transparent}
+.ckitem.on{border-color:var(--moss);color:var(--pine)}
+.ckitem.on b{background:var(--moss);border-color:var(--moss);color:#fff}
+.ckcount{font-family:var(--mono);font-size:12px;color:var(--pine-70)}
+
+/* observation cards */
+.obs{background:var(--chalk);border:1px solid var(--line);border-left:5px solid var(--pine-40);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.obs.pr-High{border-left-color:var(--signal)}
+.obs.pr-Medium{border-left-color:var(--lane)}
+.obs.pr-Low{border-left-color:var(--moss)}
+.obs-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.obs-id{font-family:var(--mono);font-size:11px;color:var(--pine-40)}
+.tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--mist);color:var(--pine-70)}
+.tag.cat{background:var(--lane-soft);color:#8A5B00}
+.obs p{font-size:14px;line-height:1.45}
+.obs .sol{font-size:13px;color:var(--pine-70);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.obs .sol b{color:var(--moss);font-family:var(--display);letter-spacing:.4px}
+.obs-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px;flex-wrap:wrap}
+.obs-foot small{font-size:11.5px;color:var(--pine-40)}
+.statusbtn{border:none;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700}
+.st-Inspected{background:#FBE3DB;color:#A33314}
+.st-Solving{background:var(--lane-soft);color:#8A5B00}
+.st-Executed{background:#DFEDE3;color:#2E5C40}
+.st-Verified{background:var(--pine);color:var(--lane)}
+.obs img.ph{max-width:120px;border-radius:8px;margin-top:8px;border:1px solid var(--line)}
+
+/* per-finding WISE tracker */
+.wtrack{display:flex;align-items:center;margin-top:10px}
+.wnode{display:flex;align-items:center}
+.wnode i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-style:normal;font-family:var(--display);font-size:11px;font-weight:800;border:2px solid var(--line);background:#FBFCFA;color:var(--pine-40)}
+.wnode.done i{background:var(--pine);border-color:var(--lane);color:var(--lane)}
+.wnode.now i{background:var(--lane);border-color:var(--lane);color:var(--pine)}
+.wnode .seg{width:26px;border-top:2.5px dashed var(--line);margin:0 2px}
+.wnode.done .seg{border-color:var(--lane)}
+.wtrack .wlabel{margin-left:8px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;color:var(--pine-70)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.filters .chip{flex-shrink:0}
+
+/* dashboard */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+@media(max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--chalk);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.kpi b{font-family:var(--display);font-size:30px;font-weight:800;display:block;line-height:1}
+.kpi span{font-size:11.5px;color:var(--pine-70);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
+.kpi.k-open b{color:var(--signal)}
+.kpi.k-done b{color:var(--moss)}
+.kpi.k-high b{color:var(--lane)}
+.chartgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.chartgrid{grid-template-columns:1fr}}
+.chartcard h3{font-family:var(--display);font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.chartbox{position:relative;height:230px}
+
+/* management insights */
+.aiband{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--pine-70);background:var(--lane-soft);border:1px solid #F0D9A6;border-radius:999px;padding:6px 13px;margin:2px 0 12px;width:fit-content;max-width:100%}
+.aiband b{font-family:var(--mono);font-weight:600}
+.statchips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:640px){.statchips{grid-template-columns:repeat(2,1fr)}}
+.statchip{background:var(--pine);color:#F3F6F2;border-radius:12px;padding:12px 14px}
+.statchip b{font-family:var(--mono);font-size:22px;font-weight:600;display:block;line-height:1.15;color:var(--lane)}
+.statchip span{font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;font-weight:600;color:#B9C8C0}
+.riskrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.riskrow:last-child{border-bottom:none}
+.riskrow .rname{width:38%;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.riskbar{flex:1;height:10px;background:var(--mist);border-radius:999px;overflow:hidden}
+.riskbar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--moss),var(--lane),var(--signal))}
+.riskrow .rval{font-family:var(--mono);font-size:12px;width:34px;text-align:right;color:var(--pine-70)}
+.agerow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.agerow:last-child{border-bottom:none}
+.agerow .aid{font-family:var(--mono);font-size:11px;color:var(--pine-40)}
+.agerow .adays{font-family:var(--mono);font-weight:600;color:var(--signal);white-space:nowrap}
+
+/* walkers / certification */
+.tier{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;letter-spacing:.03em;text-transform:uppercase}
+.t-Bronze{background:#EFE0D1;color:#8A5A2B}
+.t-Silver{background:#E7EBEE;color:#5C6B78}
+.t-Gold{background:var(--lane-soft);color:#8A5B00}
+.t-Platinum{background:var(--pine);color:var(--lane)}
+.t-none{background:var(--mist);color:var(--pine-40)}
+.wrow{display:flex;align-items:center;gap:12px;background:var(--chalk);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.wrank{font-family:var(--display);font-size:22px;font-weight:800;color:var(--pine-40);width:28px;text-align:center}
+.wname{flex:1;min-width:0}
+.wname b{display:block;font-size:14.5px}
+.wname small{font-size:11.5px;color:var(--pine-70)}
+.wpts{font-family:var(--mono);font-size:16px;font-weight:600;text-align:right}
+.wpts small{display:block;font-size:10px;color:var(--pine-40);font-family:var(--body)}
+.tierladder{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media(max-width:560px){.tierladder{grid-template-columns:repeat(2,1fr)}}
+.tcell{border:1.5px solid var(--line);border-radius:11px;padding:10px;text-align:center;background:#FBFCFA}
+.tcell b{font-family:var(--display);font-size:15px;display:block;text-transform:uppercase;letter-spacing:.4px}
+.tcell small{font-size:10.5px;color:var(--pine-70);display:block;line-height:1.3;margin-top:3px}
+.tcell .pts{font-family:var(--mono);font-size:11px;color:var(--pine-40)}
+.scrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.scrow span{font-size:13.5px;font-weight:500}
+.scrow select{width:84px;padding:8px;border:1.5px solid var(--line);border-radius:9px;background:#FBFCFA;font-family:var(--mono)}
+
+/* scorecard modal */
+.modal{position:fixed;inset:0;background:rgba(23,48,42,.55);display:none;align-items:flex-end;justify-content:center;z-index:70;padding:0}
+.modal.show{display:flex}
+.sheet{background:var(--chalk);border-radius:18px 18px 0 0;width:100%;max-width:560px;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto}
+.sheet h3{font-family:var(--display);font-size:20px;text-transform:uppercase;letter-spacing:.4px}
+.sctotal{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 6px}
+.sctotal b{font-family:var(--display);font-size:34px;color:var(--pine)}
+.sctotal b em{font-style:normal;font-size:16px;color:var(--pine-40)}
+
+/* guide */
+.guide h3{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.4px;margin:16px 0 6px;color:var(--pine)}
+.guide p,.guide li{font-size:14px;line-height:1.6;color:var(--pine-70)}
+.guide ol,.guide ul{padding-left:20px;margin:6px 0}
+.guide b{color:var(--pine)}
+.motto{font-family:var(--display);font-size:19px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--pine);border-left:4px solid var(--lane);padding-left:12px;margin:16px 0;line-height:1.5}
+.vmcard{border-left:4px solid var(--lane);padding-left:12px;margin:10px 0}
+.vmcard b{font-family:var(--display);text-transform:uppercase;letter-spacing:.5px;font-size:14px}
+.pillar{display:flex;gap:12px;margin:14px 0}
+.pillar .stagebadge{width:36px;height:36px;font-size:19px}
+.pillar h4{font-family:var(--display);font-size:16px;text-transform:uppercase;letter-spacing:.4px}
+.pillar small{font-size:11.5px;color:var(--pine-40);display:block;margin-bottom:3px}
+.pillar ul{padding-left:18px;margin:2px 0}
+
+/* bottom nav */
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--pine);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:none;color:#93A8A0;padding:11px 2px 9px;font-size:10.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;border-top:3px solid transparent}
+nav button.on{color:var(--lane);border-top-color:var(--lane)}
+nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--pine);color:#fff;padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:80;box-shadow:var(--shadow);max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;color:var(--pine-40);font-size:14px;padding:30px 10px}
+footer{max-width:1060px;margin:6px auto 0;padding:0 16px;font-size:11px;color:var(--pine-40);text-align:center;line-height:1.7}
+footer a{color:inherit;text-decoration:none}
+.guulba{font-weight:700;font-size:12px;letter-spacing:.02em}
+.guulba .g1{color:#F59E0B}.guulba .g2{color:#06B6D4}.guulba .g3{color:#22C55E}.guulba .g4{color:#A855F7}.guulba .g5{color:#F97316}.guulba .g6{color:#F43F5E}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brandrow">
+    <div class="wordmark">WISE <em>WALK</em><span class="tm">™</span></div>
+    <div class="byline"><span class="syncdot" id="syncDot"></span><span id="orgByline">MBBC &amp; Company</span></div>
+  </div>
+  <div class="lane"></div>
+</header>
+
+<main>
+
+<!-- ================= WALK TAB ================= -->
+<section id="tab-walk" class="tabpane active">
+  <div id="startView">
+    <h2 class="sec">Plan the walk</h2>
+    <p class="sec-sub" id="mottoLine"></p>
+
+    <div class="wise-strip" id="wiseStrip" aria-label="WISE framework steps"></div>
+
+    <div class="card">
+      <label class="f" for="obsName">Observer</label>
+      <input class="in" id="obsName" placeholder="Your name" autocomplete="name">
+      <label class="f" for="obsArea">Walk area</label>
+      <select class="in" id="obsArea"></select>
+      <label class="f" for="walkMin">Duration</label>
+      <select class="in" id="walkMin"></select>
+      <div style="height:16px"></div>
+      <button class="btn btn-lane" onclick="startWalk()">Start the W — Walk</button>
+    </div>
+  </div>
+
+  <div id="activeView" style="display:none">
+    <div class="walkbar">
+      <div class="timer" id="timer">60:00</div>
+      <div class="walkmeta"><b id="walkWho">—</b><span id="walkCount">0 observations</span></div>
+      <button class="endbtn" onclick="openScorecard()">End walk</button>
+    </div>
+
+    <div class="card">
+      <h2 class="sec" style="font-size:18px">New finding — the WISE way</h2>
+
+      <!-- I — INSPECT -->
+      <div class="stagehead"><span class="stagebadge">I</span><div><b>Inspect</b><br><small id="tagI"></small></div></div>
+      <div class="stagebody">
+        <label class="f">Category</label>
+        <div class="chips" id="catChips"></div>
+        <label class="f">Priority</label>
+        <div class="chips" id="priChips">
+          <button class="chip p-high" data-v="High" onclick="pickPri(this)">High</button>
+          <button class="chip p-med sel" data-v="Medium" onclick="pickPri(this)">Medium</button>
+          <button class="chip p-low" data-v="Low" onclick="pickPri(this)">Low</button>
+        </div>
+        <label class="f" for="oNote">What did you observe?</label>
+        <textarea class="in" id="oNote" placeholder="Facts, not assumptions — describe the condition, behavior, or opportunity"></textarea>
+        <label class="f" for="oPhoto">Photo evidence (optional)</label>
+        <div class="photowrap">
+          <input type="file" id="oPhoto" accept="image/*" capture="environment" style="font-size:13px" onchange="loadPhoto(this)">
+          <img class="photoprev" id="photoPrev" alt="Photo preview">
+        </div>
+      </div>
+
+      <!-- S — SOLVE -->
+      <div class="stagehead"><span class="stagebadge">S</span><div><b>Solve</b><br><small id="tagS"></small></div></div>
+      <div class="stagebody">
+        <label class="f" for="oCause">Root cause (why is this happening?)</label>
+        <textarea class="in" id="oCause" style="min-height:52px" placeholder="Ask why until you reach the root, not the symptom"></textarea>
+        <label class="f" for="oSol">Recommended solution</label>
+        <textarea class="in" id="oSol" style="min-height:52px" placeholder="Practical, achievable fix"></textarea>
+      </div>
+
+      <!-- E — EXECUTE -->
+      <div class="stagehead"><span class="stagebadge">E</span><div><b>Execute</b><br><small id="tagE"></small></div></div>
+      <div class="stagebody">
+        <div class="grid2">
+          <div>
+            <label class="f" for="oAssign">Assign to</label>
+            <input class="in" id="oAssign" placeholder="Responsible person / dept">
+          </div>
+          <div>
+            <label class="f" for="oDue">Target date</label>
+            <input class="in" type="date" id="oDue">
+          </div>
+        </div>
+      </div>
+
+      <div style="height:16px"></div>
+      <button class="btn btn-pine" onclick="addObservation()">Capture WISE finding</button>
+    </div>
+
+    <div class="card">
+      <h2 class="sec" style="font-size:17px;display:flex;justify-content:space-between;align-items:baseline">Standard checklist <span class="ckcount" id="ckCount">0 / 12</span></h2>
+      <p class="sec-sub" style="margin-bottom:10px">Tick each area as you cover it during the walk.</p>
+      <div class="ck" id="ckList"></div>
+    </div>
+
+    <h2 class="sec" style="font-size:17px">Captured this walk</h2>
+    <div id="walkObsList"><div class="empty">Nothing captured yet — keep your eyes open.</div></div>
+  </div>
+</section>
+
+<!-- ================= ACTIONS TAB ================= -->
+<section id="tab-actions" class="tabpane">
+  <h2 class="sec">WISE pipeline</h2>
+  <p class="sec-sub">Every finding moves I → S → E → Verified. Tap a status to advance it.</p>
+  <input class="in" id="q" placeholder="Search findings…" oninput="renderActions()" style="margin-bottom:10px">
+  <div class="filters" id="stFilters"></div>
+  <div class="filters" id="catFilters"></div>
+  <div id="actionList"></div>
+</section>
+
+<!-- ================= DASHBOARD TAB ================= -->
+<section id="tab-dash" class="tabpane">
+  <h2 class="sec">Organizational intelligence</h2>
+  <p class="sec-sub">Every walk creates insight. Every insight drives improvement.</p>
+  <div class="kpis">
+    <div class="kpi"><b id="kWalks">0</b><span>Walks completed</span></div>
+    <div class="kpi"><b id="kFpw">0</b><span>Findings / walk</span></div>
+    <div class="kpi k-done"><b id="kClosure">0%</b><span>Closure rate</span></div>
+    <div class="kpi"><b id="kAvgDays">—</b><span>Avg closure (days)</span></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="kTotal">0</b><span>Total findings</span></div>
+    <div class="kpi k-open"><b id="kOpen">0</b><span>At Inspect</span></div>
+    <div class="kpi k-high"><b id="kHigh">0</b><span>High priority</span></div>
+    <div class="kpi"><b id="kWalkers">0</b><span>Active walkers</span></div>
+  </div>
+  <div class="chartgrid">
+    <div class="card chartcard"><h3>Findings by category</h3><div class="chartbox"><canvas id="cCat"></canvas></div></div>
+    <div class="card chartcard"><h3>Priority mix</h3><div class="chartbox"><canvas id="cPri"></canvas></div></div>
+    <div class="card chartcard"><h3>WISE pipeline status</h3><div class="chartbox"><canvas id="cSt"></canvas></div></div>
+    <div class="card chartcard"><h3>Weekly walk activity</h3><div class="chartbox"><canvas id="cTrend"></canvas></div></div>
+  </div>
+
+  <h2 class="sec" style="margin-top:18px">Management insights</h2>
+  <p class="sec-sub">Statistical analysis for effective management decisions.</p>
+  <div class="aiband" id="aiBand">Computed in-browser · connect the Python pipeline for nightly deep analytics</div>
+  <div class="statchips">
+    <div class="statchip"><b id="iMedian">—</b><span>Median closure (days)</span></div>
+    <div class="statchip"><b id="iP90">—</b><span>P90 closure (days)</span></div>
+    <div class="statchip"><b id="iSlope">—</b><span>Trend (findings/week)</span></div>
+    <div class="statchip"><b id="iForecast">—</b><span>Forecast next 4 wks</span></div>
+  </div>
+  <div class="chartgrid">
+    <div class="card chartcard"><h3>Pareto — vital few categories</h3><div class="chartbox"><canvas id="cPareto"></canvas></div></div>
+    <div class="card chartcard"><h3>Area risk index</h3><div id="riskList"></div></div>
+  </div>
+  <div class="card chartcard"><h3>High-priority aging watchlist</h3><div id="ageList"></div></div>
+</section>
+
+<!-- ================= WALKERS TAB ================= -->
+<section id="tab-walkers" class="tabpane">
+  <h2 class="sec">Walkers &amp; certification</h2>
+  <p class="sec-sub">Each completed walk earns a scorecard out of 100. Points accumulate toward certification.</p>
+  <div id="walkerBoard"></div>
+  <div class="card">
+    <h2 class="sec" style="font-size:17px">Certification ladder</h2>
+    <div class="tierladder" id="tierLadder"></div>
+  </div>
+  <div class="card">
+    <h2 class="sec" style="font-size:17px">Scorecard criteria</h2>
+    <p class="sec-sub" style="margin-bottom:8px">Every walk is scored on five criteria, 20 points each.</p>
+    <div id="scRef"></div>
+  </div>
+</section>
+
+<!-- ================= GUIDE TAB ================= -->
+<section id="tab-guide" class="tabpane guide">
+  <h2 class="sec">WISE Walk™ manual</h2>
+  <p class="sec-sub">Organizational development framework · Developed by MBBC &amp; Company</p>
+  <div class="card">
+    <div class="vmcard"><b>Vision</b><p id="visionTxt"></p></div>
+    <div class="vmcard"><b>Mission</b><p id="missionTxt"></p></div>
+    <div id="pillars"></div>
+
+    <h3>The WISE Walk cycle</h3>
+    <ol id="cycleList"></ol>
+
+    <h3>WISE Walk KPIs</h3>
+    <ul id="kpiList"></ul>
+
+    <h3>WISE Walk principles</h3>
+    <ol id="principleList"></ol>
+
+    <div class="motto" id="mottoBlock"></div>
+    <p id="creedTxt"></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  WISE Walk™ · Developed by MBBC &amp; Company · <span id="orgFoot"></span><span id="dataNote">Local data</span><br>
+  Technology Partner: <a href="https://www.guulba.com" target="_blank" rel="noopener" class="guulba"><span class="g1">g</span><span class="g2">u</span><span class="g3">u</span><span class="g4">l</span><span class="g5">b</span><span class="g6">a</span></a> — An Artificial Intelligence Company
+</footer>
+
+<nav aria-label="Main">
+  <button class="on" data-tab="walk" onclick="go('walk',this)">
+    <svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0.01 0M10 22l2-6 3 2v4M8 13l2-4 4 1 3 3M6 22l2-7"/></svg>Walk</button>
+  <button data-tab="actions" onclick="go('actions',this)">
+    <svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Pipeline</button>
+  <button data-tab="dash" onclick="go('dash',this)">
+    <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Dashboard</button>
+  <button data-tab="walkers" onclick="go('walkers',this)">
+    <svg viewBox="0 0 24 24"><path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg>Walkers</button>
+  <button data-tab="guide" onclick="go('guide',this)">
+    <svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h13"/></svg>Guide</button>
+</nav>
+
+<!-- ================= SCORECARD MODAL ================= -->
+<div class="modal" id="scModal" role="dialog" aria-modal="true" aria-labelledby="scTitle">
+  <div class="sheet">
+    <h3 id="scTitle">Walk scorecard</h3>
+    <p class="sec-sub" style="margin:4px 0 8px">Score this walk on the five WISE criteria (0–20 each).</p>
+    <div id="scRows"></div>
+    <div class="sctotal"><span style="font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--pine-70)">Walk score</span><b><span id="scTotal">50</span><em> / 100</em></b></div>
+    <button class="btn btn-lane" onclick="submitWalk()">Submit &amp; complete walk</button>
+    <div style="height:8px"></div>
+    <button class="btn" style="width:100%;background:transparent;border:1.5px solid var(--line);color:var(--pine-70)" onclick="closeScorecard()">Keep walking</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   WISE WALK™ — Organizational Development Framework
+   Developed by MBBC & Company
+
+   The WISE_FRAMEWORK object below IS the branded method. Every part of
+   this app — the walk flow, the capture form, the finding pipeline,
+   the scorecard, the certification ladder, and the manual — is rendered
+   FROM this single object. Change the framework here, and the whole
+   app follows. The method is the code; the code is the method.
+===================================================================== */
+const WISE_FRAMEWORK = {
+  brand: "WISE Walk™",
+  owner: "MBBC & Company",
+
+  vision: "A high-performance organization where every employee contributes to continuous improvement through structured workplace observation, data collection, problem solving, and action.",
+  mission: "Transform daily workplace observations into organizational intelligence that supports operational excellence, employee engagement, and sustainable business growth.",
+
+  /* The four pillars — W · I · S · E */
+  pillars: {
+    W: { name: "Walk",    tagline: "Walk with purpose",
+         actions: ["Visit the workplace with purpose","Observe actual work practices","Engage with employees"] },
+    I: { name: "Inspect", tagline: "Inspect with curiosity",
+         actions: ["Identify risks, problems, waste, and opportunities","Collect evidence through photos and notes","Record findings in the WISE Walk™ app"] },
+    S: { name: "Solve",   tagline: "Solve with intelligence",
+         actions: ["Analyze root causes","Recommend practical solutions","Prioritize improvement opportunities"] },
+    E: { name: "Execute", tagline: "Execute with excellence",
+         actions: ["Assign responsibilities","Implement actions","Verify completion","Measure business impact"] }
+  },
+
+  /* Every finding travels the WISE pipeline: I → S → E → Verified */
+  pipeline: [
+    { key: "Inspected", letter: "I", label: "I · Inspected", meaning: "Finding recorded with evidence" },
+    { key: "Solving",   letter: "S", label: "S · Solving",   meaning: "Root cause analysis and solution design" },
+    { key: "Executed",  letter: "E", label: "E · Executed",  meaning: "Action implemented by the responsible owner" },
+    { key: "Verified",  letter: "✓", label: "E ✓ Verified",  meaning: "Effectiveness verified, impact measured" }
+  ],
+
+  cycle: ["Plan the walk","Walk the workplace","Observe","Record findings","Analyze","Recommend solutions","Assign actions","Execute improvements","Verify results","Share learning"],
+
+  categories: ["Safety","Quality","Productivity","Cost","Delivery","Maintenance","Environment","HR & People","Compliance","Innovation","Customer Impact","Sustainability"],
+
+  checklist: ["Workplace condition","Safety compliance","Machine condition","Product quality","Material flow","Housekeeping","Employee engagement","SOP compliance","Waste identification","Cost-saving opportunities","Improvement ideas","Customer impact"],
+
+  scorecard: [
+    { key: "obsQ",     label: "Observation quality",  max: 20 },
+    { key: "accuracy", label: "Accuracy of findings", max: 20 },
+    { key: "solQ",     label: "Solution quality",     max: 20 },
+    { key: "actC",     label: "Action completion",    max: 20 },
+    { key: "impact",   label: "Business impact",      max: 20 }
+  ],
+
+  kpis: ["Number of walks completed","Findings per walk","Valid findings","Corrective action closure rate","Average closure time","Cost savings","Productivity improvements","Employee participation rate","Safety improvements","Innovation ideas implemented"],
+
+  certification: [
+    { tier: "Bronze",   title: "Certified WISE Walker",      minPoints: 100  },
+    { tier: "Silver",   title: "WISE Improvement Leader",    minPoints: 400  },
+    { tier: "Gold",     title: "WISE Excellence Champion",   minPoints: 800  },
+    { tier: "Platinum", title: "WISE Master Practitioner",   minPoints: 1500 }
+  ],
+
+  principles: ["Observe without assumptions","Respect people","Focus on facts","Solve root causes","Encourage innovation","Share knowledge","Measure results","Continuously improve"],
+
+  motto: ["Walk with Purpose.","Inspect with Curiosity.","Solve with Intelligence.","Execute with Excellence."],
+  creed: "Every walk creates insight. Every insight drives improvement. Every improvement builds organizational excellence."
+};
+
+/* =====================================================
+   CONFIG — paste your Google Apps Script Web App URL to
+   enable cloud sync (leave blank for local-only mode)
+===================================================== */
+const CONFIG = { SCRIPT_URL: "" };
+
+/* =====================================================================
+   ORG_CONFIG — DEPLOYMENT SETTINGS FOR A NEW ORGANIZATION
+   The WISE_FRAMEWORK above is the method (MBBC & Company IP) — do not
+   edit it per client. To implement WISE Walk™ at a new organization,
+   edit ONLY this block:
+     1. name / shortName / industry
+     2. areas — the walk zones of THIS organization
+     3. walkMinutes — allowed walk durations (first = default)
+     4. analyticsUrl — path to the nightly Python analytics JSON
+        (leave as-is if using the provided GitHub Actions pipeline)
+===================================================================== */
+const ORG_CONFIG = {
+  name: "Demo Organization Ltd.",
+  shortName: "DEMO",
+  industry: "Manufacturing",
+  areas: [
+    "Production Floor","Cutting","Sewing","Finishing","Printing",
+    "Warehouse / Store","Maintenance","Quality Lab","Utilities",
+    "Office / Admin","Canteen & Welfare","Compound / Exterior"
+  ],
+  walkMinutes: [60, 30, 45, 90],
+  analyticsUrl: "analytics/analytics.json"
+};
+
+/* Derived from the framework — never hard-coded elsewhere */
+const WF = WISE_FRAMEWORK;
+const CATEGORIES = WF.categories;
+const CHECKLIST = WF.checklist;
+const STATUSES = WF.pipeline.map(p=>p.key);
+const ST_LABEL = Object.fromEntries(WF.pipeline.map(p=>[p.key,p.label]));
+const TIERS = [...WF.certification].sort((a,b)=>b.minPoints-a.minPoints);
+
+let DB = [], WALKS = [];
+let walk = null, timerInt = null;
+let selCat = CATEGORIES[0], selPri = "Medium", photoData = "";
+let fSt = "All", fCat = "All";
+let charts = {};
+
+/* ---------- render the framework into the UI ---------- */
+function renderFramework(){
+  // WISE strip (Walk tab)
+  document.getElementById("wiseStrip").innerHTML = Object.entries(WF.pillars).map(([L,p])=>
+    `<div class="wstep"><b>${L}</b><span>${p.name}</span><small>${p.tagline.replace(p.name+" with ","With ")}</small></div>`).join("");
+  document.getElementById("mottoLine").textContent = WF.motto.join(" ");
+  // stage taglines in capture form
+  document.getElementById("tagI").textContent = WF.pillars.I.tagline;
+  document.getElementById("tagS").textContent = WF.pillars.S.tagline;
+  document.getElementById("tagE").textContent = WF.pillars.E.tagline;
+  // certification ladder
+  const tierColors = {Bronze:"#8A5A2B",Silver:"#5C6B78",Gold:"#8A5B00",Platinum:"#17302A"};
+  document.getElementById("tierLadder").innerHTML = WF.certification.map(c=>
+    `<div class="tcell"><b style="color:${tierColors[c.tier]}">${c.tier}</b><small>${c.title}</small><span class="pts">${c.minPoints}+ pts</span></div>`).join("");
+  // scorecard reference
+  document.getElementById("scRef").innerHTML = WF.scorecard.map((c,i)=>
+    `<div class="scrow"${i===WF.scorecard.length-1?' style="border-bottom:none"':''}><span>${c.label}</span><span class="ckcount">/ ${c.max}</span></div>`).join("");
+  // guide / manual
+  document.getElementById("visionTxt").textContent = WF.vision;
+  document.getElementById("missionTxt").textContent = WF.mission;
+  document.getElementById("pillars").innerHTML = Object.entries(WF.pillars).map(([L,p])=>
+    `<div class="pillar"><span class="stagebadge">${L}</span><div><h4>${L} — ${p.name}</h4><small>${p.tagline}</small><ul>${p.actions.map(a=>`<li>${a}</li>`).join("")}</ul></div></div>`).join("");
+  document.getElementById("cycleList").innerHTML = WF.cycle.map(s=>`<li>${s}</li>`).join("");
+  document.getElementById("kpiList").innerHTML = WF.kpis.map(k=>`<li>${k}</li>`).join("");
+  document.getElementById("principleList").innerHTML = WF.principles.map(p=>`<li>${p}</li>`).join("");
+  document.getElementById("mottoBlock").innerHTML = WF.motto.join("<br>");
+  document.getElementById("creedTxt").textContent = WF.creed;
+
+  // Organization deployment (from ORG_CONFIG)
+  document.getElementById("orgByline").textContent = ORG_CONFIG.name;
+  document.getElementById("obsArea").innerHTML = ORG_CONFIG.areas.map(a=>`<option>${a}</option>`).join("");
+  document.getElementById("walkMin").innerHTML = ORG_CONFIG.walkMinutes.map((m,i)=>
+    `<option value="${m}"${i===0?" selected":""}>${m} minutes${i===0?" (standard)":""}</option>`).join("");
+  document.getElementById("orgFoot").textContent = "Implemented at " + ORG_CONFIG.name + " · ";
+  document.title = WF.brand + " — " + ORG_CONFIG.shortName + " · " + WF.owner;
+}
+
+/* ---------- storage (guarded — works on GitHub Pages) ---------- */
+const OLD_STATUS_MAP = {Open:"Inspected",InProgress:"Solving",Done:"Executed"}; // migrate v2 data
+function loadLocal(){
+  try{
+    const a = localStorage.getItem("wisewalk_db");   if(a) DB = JSON.parse(a);
+    const b = localStorage.getItem("wisewalk_walks");if(b) WALKS = JSON.parse(b);
+    DB.forEach(o=>{ if(OLD_STATUS_MAP[o.status]) o.status = OLD_STATUS_MAP[o.status]; });
+  }catch(e){}
+}
+function saveLocal(){
+  try{
+    localStorage.setItem("wisewalk_db", JSON.stringify(DB));
+    localStorage.setItem("wisewalk_walks", JSON.stringify(WALKS));
+  }catch(e){}
+}
+
+/* ---------- cloud sync (Apps Script) ---------- */
+async function pushRemote(rows, kind){
+  if(!CONFIG.SCRIPT_URL) return;
+  try{
+    await fetch(CONFIG.SCRIPT_URL,{method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify({action:"upsert", kind:kind||"obs", rows})});
+    setSync(true);
+  }catch(e){ setSync(false); }
+}
+async function pullRemote(){
+  if(!CONFIG.SCRIPT_URL) return;
+  try{
+    const r = await fetch(CONFIG.SCRIPT_URL + "?action=all&t=" + Date.now());
+    const j = await r.json();
+    if(Array.isArray(j.rows)){
+      const map = Object.fromEntries(DB.map(o=>[o.id,o]));
+      j.rows.forEach(o=>{ if(OLD_STATUS_MAP[o.status]) o.status = OLD_STATUS_MAP[o.status]; map[o.id]=o; });
+      DB = Object.values(map).sort((a,b)=>b.ts-a.ts);
+    }
+    if(Array.isArray(j.walks)){
+      const wm = Object.fromEntries(WALKS.map(w=>[w.id,w]));
+      j.walks.forEach(w=>wm[w.id]=w);
+      WALKS = Object.values(wm).sort((a,b)=>b.ts-a.ts);
+    }
+    saveLocal(); renderAll(); setSync(true);
+  }catch(e){ setSync(false); }
+}
+function setSync(on){
+  document.getElementById("syncDot").classList.toggle("on", on);
+  document.getElementById("dataNote").textContent = on ? "Synced to cloud" : (CONFIG.SCRIPT_URL ? "Sync pending" : "Local data");
+}
+
+/* ---------- demo seed ---------- */
+function seed(){
+  if(DB.length) return;
+  const now = Date.now(), d = 864e5;
+  const demo = [
+    ["Safety","High","Sewing","Emergency exit near line 4 partially blocked by fabric rolls.","WIP overflow — no designated staging near line 4.","Relocate WIP racks; mark exit lane with floor tape.","Compliance Team","Solving",2,"R. Karim",null],
+    ["Maintenance","Medium","Cutting","Cutter blade guard loose on machine C-07; vibration noted.","Guard bolts not on the weekly PM checklist.","Re-torque guard and add to weekly maintenance checklist.","Maintenance","Inspected",1,"S. Akter",null],
+    ["Quality","High","Finishing","Shade variation slipping through final inspection under low light.","Inspection tables lit below required lux level.","Install daylight-balanced lamps at inspection tables.","QA Manager","Executed",5,"R. Karim",2],
+    ["Cost","Medium","Utilities","Compressed-air leak audible near header pipe, section B.","Aging joint seals; no leak survey routine.","Tag leak and repair; schedule quarterly ultrasonic leak survey.","Utility In-charge","Verified",8,"S. Akter",4],
+    ["Innovation","Low","Warehouse / Store","Operator suggests color-coded bins for trims to cut search time.","Trims stored by arrival date, not by usage frequency.","Pilot 5S color-coding in trims store for two weeks.","Store Officer","Inspected",3,"M. Hasan",null],
+    ["Productivity","Medium","Production Floor","Bundle handover between lines 2 and 3 causes ~6 min wait each hour.","No buffer between unbalanced line speeds.","Add a small buffer rack and revise handover timing.","IE Department","Solving",4,"R. Karim",null],
+    ["HR & People","Medium","Sewing","Three new operators unsure of needle-change SOP.","Induction covers SOP once, with no visual aid at station.","Refresher micro-training and visual SOP card at station.","HR / Training","Executed",6,"M. Hasan",3],
+    ["Environment","Low","Compound / Exterior","Waste segregation bins mixed near loading bay.","Signage in English only; cleaning team briefed once.","Re-brief cleaning team; add bilingual signage.","Admin","Inspected",1,"S. Akter",null],
+    ["Delivery","High","Warehouse / Store","Finished-goods staging area congested; loading delayed 40 min yesterday.","No time-slotting for buyer shipments.","Introduce time-slotted staging lanes per buyer.","Logistics","Solving",2,"R. Karim",null],
+    ["Compliance","Medium","Quality Lab","Calibration sticker expired on GSM cutter.","No advance alert before calibration due dates.","Recalibrate and set renewal alerts 15 days ahead.","QA Manager","Executed",7,"M. Hasan",2]
+  ];
+  DB = demo.map((r,i)=>({
+    id:"WW-"+String(1000+i), ts: now - r[8]*d - i*36e5,
+    walker:r[9], area:r[2], category:r[0], priority:r[1],
+    note:r[3], rootCause:r[4], solution:r[5], assignee:r[6], status:r[7], photo:"", due:"",
+    closedTs: r[10]!=null ? now - r[8]*d - i*36e5 + r[10]*d : ""
+  }));
+  WALKS = [
+    {id:"WK-500",ts:now-2*d, walker:"R. Karim", area:"Sewing", mins:60, findings:3, checklist:11, scores:{obsQ:18,accuracy:16,solQ:15,actC:14,impact:12}, total:75},
+    {id:"WK-501",ts:now-4*d, walker:"S. Akter", area:"Utilities", mins:60, findings:2, checklist:12, scores:{obsQ:17,accuracy:18,solQ:16,actC:15,impact:16}, total:82},
+    {id:"WK-502",ts:now-6*d, walker:"M. Hasan", area:"Warehouse / Store", mins:45, findings:3, checklist:9, scores:{obsQ:14,accuracy:13,solQ:15,actC:12,impact:10}, total:64},
+    {id:"WK-503",ts:now-9*d, walker:"R. Karim", area:"Finishing", mins:60, findings:2, checklist:10, scores:{obsQ:15,accuracy:14,solQ:13,actC:16,impact:12}, total:70}
+  ];
+  saveLocal();
+}
+
+/* ---------- navigation ---------- */
+function go(tab, btn){
+  document.querySelectorAll(".tabpane").forEach(p=>p.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  if(tab==="dash") renderDash();
+  if(tab==="actions") renderActions();
+  if(tab==="walkers") renderWalkers();
+  window.scrollTo({top:0});
+}
+
+/* ---------- W · WALK — the session ---------- */
+function startWalk(){
+  const name = document.getElementById("obsName").value.trim();
+  if(!name){ toast("Enter your name to start"); return; }
+  walk = {
+    who:name, area:document.getElementById("obsArea").value,
+    mins:+document.getElementById("walkMin").value,
+    started:Date.now(), count:0, checks:new Set()
+  };
+  document.getElementById("startView").style.display="none";
+  document.getElementById("activeView").style.display="block";
+  document.getElementById("walkWho").textContent = walk.who + " · " + walk.area;
+  buildChecklist(); updateWalkCount();
+  tick(); timerInt = setInterval(tick, 1000);
+  toast("W — " + WF.pillars.W.tagline);
+}
+function tick(){
+  const left = walk.mins*60 - Math.floor((Date.now()-walk.started)/1000);
+  const t = document.getElementById("timer");
+  if(left <= 0){ t.textContent = "00:00"; return; }
+  t.textContent = String(Math.floor(left/60)).padStart(2,"0") + ":" + String(left%60).padStart(2,"0");
+}
+function updateWalkCount(){
+  document.getElementById("walkCount").textContent = walk.count + " observation" + (walk.count===1?"":"s");
+}
+
+/* ---------- checklist ---------- */
+function buildChecklist(){
+  document.getElementById("ckList").innerHTML = CHECKLIST.map((c,i)=>
+    `<div class="ckitem${walk.checks.has(i)?" on":""}" role="checkbox" aria-checked="${walk.checks.has(i)}" tabindex="0" onclick="toggleCk(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCk(${i})}"><b>✓</b>${c}</div>`).join("");
+  document.getElementById("ckCount").textContent = walk.checks.size + " / " + CHECKLIST.length;
+}
+function toggleCk(i){
+  walk.checks.has(i) ? walk.checks.delete(i) : walk.checks.add(i);
+  buildChecklist();
+}
+
+/* ---------- scorecard & end walk (built from WF.scorecard) ---------- */
+function openScorecard(){
+  document.getElementById("scRows").innerHTML = WF.scorecard.map(c=>{
+    const opts = [0,5,10,15,20].map(v=>`<option value="${v}"${v===10?" selected":""}>${v}</option>`).join("");
+    return `<div class="scrow"><span>${c.label}</span><select data-k="${c.key}" onchange="scTotal()">${opts}</select></div>`;
+  }).join("");
+  scTotal();
+  document.getElementById("scModal").classList.add("show");
+}
+function closeScorecard(){ document.getElementById("scModal").classList.remove("show"); }
+function scTotal(){
+  let t = 0;
+  document.querySelectorAll("#scRows select").forEach(s=>t+=+s.value);
+  document.getElementById("scTotal").textContent = t;
+  return t;
+}
+function submitWalk(){
+  const scores = {};
+  document.querySelectorAll("#scRows select").forEach(s=>scores[s.dataset.k]=+s.value);
+  const rec = {
+    id:"WK-"+String(500+WALKS.length)+"-"+Math.floor(Math.random()*90+10),
+    ts:Date.now(), walker:walk.who, area:walk.area, mins:walk.mins,
+    findings:walk.count, checklist:walk.checks.size, scores, total:scTotal()
+  };
+  WALKS.unshift(rec);
+  saveLocal(); pushRemote([rec],"walk");
+  clearInterval(timerInt);
+  const n = walk.count; walk = null; photoData = "";
+  closeScorecard();
+  document.getElementById("activeView").style.display="none";
+  document.getElementById("startView").style.display="block";
+  document.getElementById("walkObsList").innerHTML = '<div class="empty">Nothing captured yet — keep your eyes open.</div>';
+  toast("Walk complete — " + n + " finding" + (n===1?"":"s") + " · " + rec.total + " pts");
+  go("walkers", document.querySelector('nav button[data-tab="walkers"]'));
+}
+
+/* ---------- I · INSPECT — capture ---------- */
+function buildCatChips(){
+  document.getElementById("catChips").innerHTML = CATEGORIES.map(c=>
+    `<button class="chip${c===selCat?" sel":""}" onclick="pickCat(this)" data-v="${c}">${c}</button>`).join("");
+}
+function pickCat(el){ selCat = el.dataset.v; buildCatChips(); }
+function pickPri(el){
+  selPri = el.dataset.v;
+  document.querySelectorAll("#priChips .chip").forEach(c=>c.classList.toggle("sel", c===el));
+}
+function loadPhoto(input){
+  const f = input.files[0]; if(!f) return;
+  const img = new Image(), rd = new FileReader();
+  rd.onload = e => { img.src = e.target.result; };
+  img.onload = () => {
+    const max = 800, sc = Math.min(1, max/Math.max(img.width, img.height));
+    const cv = document.createElement("canvas");
+    cv.width = img.width*sc; cv.height = img.height*sc;
+    cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    photoData = cv.toDataURL("image/jpeg",.7);
+    const p = document.getElementById("photoPrev");
+    p.src = photoData; p.style.display="block";
+  };
+  rd.readAsDataURL(f);
+}
+function addObservation(){
+  const note = document.getElementById("oNote").value.trim();
+  if(!note){ toast("I — describe what you inspected"); return; }
+  const o = {
+    id:"WW-"+String(1000+DB.length)+"-"+Math.floor(Math.random()*90+10),
+    ts:Date.now(), walker:walk.who, area:walk.area,
+    category:selCat, priority:selPri, note,
+    rootCause:document.getElementById("oCause").value.trim(),
+    solution:document.getElementById("oSol").value.trim(),
+    assignee:document.getElementById("oAssign").value.trim(),
+    due:document.getElementById("oDue").value,
+    status:STATUSES[0], photo:photoData, closedTs:""
+  };
+  DB.unshift(o); walk.count++; updateWalkCount();
+  saveLocal(); pushRemote([o],"obs");
+  ["oNote","oCause","oSol","oAssign","oDue"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("oPhoto").value=""; photoData="";
+  document.getElementById("photoPrev").style.display="none";
+  renderWalkList(); toast("Captured — " + o.id + " enters the WISE pipeline");
+}
+function renderWalkList(){
+  if(!walk) return;
+  const mine = DB.filter(o=>o.walker===walk.who && o.ts>=walk.started);
+  document.getElementById("walkObsList").innerHTML =
+    mine.length ? mine.map(o=>obsCard(o,false)).join("") : '<div class="empty">Nothing captured yet — keep your eyes open.</div>';
+}
+
+/* ---------- S/E · the WISE pipeline ---------- */
+function buildFilters(){
+  document.getElementById("stFilters").innerHTML =
+    ["All",...STATUSES].map(s=>`<button class="chip${s===fSt?" sel":""}" onclick="fSt='${s}';buildFilters();renderActions()">${s==="All"?"All stages":ST_LABEL[s]||s}</button>`).join("");
+  document.getElementById("catFilters").innerHTML =
+    ["All",...CATEGORIES].map(c=>`<button class="chip${c===fCat?" sel":""}" data-cat="${c}" onclick="fCat=this.dataset.cat;buildFilters();renderActions()">${c==="All"?"All categories":c}</button>`).join("");
+}
+function renderActions(){
+  const q = (document.getElementById("q").value||"").toLowerCase();
+  const rows = DB.filter(o =>
+    (fSt==="All"||o.status===fSt) &&
+    (fCat==="All"||o.category===fCat) &&
+    (!q || (o.note+(o.rootCause||"")+o.solution+o.area+o.assignee+o.id).toLowerCase().includes(q)));
+  document.getElementById("actionList").innerHTML =
+    rows.length ? rows.map(o=>obsCard(o,true)).join("") : '<div class="empty">No findings match. Time for a walk?</div>';
+}
+function wiseTrack(o){
+  // W is complete by definition (the walk happened); I complete once logged;
+  // S complete when Solving is passed; E when Executed; ✓ when Verified.
+  const stageIdx = STATUSES.indexOf(o.status); // 0..3
+  const nodes = [
+    {L:"W", state:"done"},
+    {L:"I", state: stageIdx>=1 ? "done" : "now"},
+    {L:"S", state: stageIdx>=2 ? "done" : (stageIdx===1 ? "now" : "")},
+    {L:"E", state: stageIdx===3 ? "done" : (stageIdx===2 ? "now" : "")}
+  ];
+  return `<div class="wtrack" aria-label="WISE stage: ${ST_LABEL[o.status]}">` +
+    nodes.map((n,i)=>`<span class="wnode ${n.state}">${i>0?'<span class="seg"></span>':''}<i>${n.L}</i></span>`).join("") +
+    `<span class="wlabel">${WF.pipeline[stageIdx]?WF.pipeline[stageIdx].meaning:""}</span></div>`;
+}
+function obsCard(o, actionable){
+  const dt = new Date(o.ts).toLocaleDateString(undefined,{day:"numeric",month:"short"});
+  const due = o.due ? ` · due ${new Date(o.due+"T00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"})}` : "";
+  return `<div class="obs pr-${o.priority}">
+    <div class="obs-top">
+      <span class="obs-id">${o.id}</span>
+      <span class="tag cat">${esc(o.category)}</span>
+      <span class="tag">${esc(o.area)}</span>
+      <span class="tag">${o.priority}</span>
+    </div>
+    <p>${esc(o.note)}</p>
+    ${o.rootCause?`<div class="sol"><b>WHY →</b> ${esc(o.rootCause)}</div>`:""}
+    ${o.solution?`<div class="sol"><b>SOLVE →</b> ${esc(o.solution)}</div>`:""}
+    ${o.photo?`<img class="ph" src="${o.photo}" alt="Observation photo">`:""}
+    ${wiseTrack(o)}
+    <div class="obs-foot">
+      <small>${esc(o.walker)} · ${dt}${o.assignee?` · → ${esc(o.assignee)}`:""}${due}</small>
+      ${actionable
+        ? `<button class="statusbtn st-${o.status}" onclick="advance('${o.id}')" title="Tap to advance along the WISE pipeline">${ST_LABEL[o.status]}</button>`
+        : `<span class="statusbtn st-${o.status}">${ST_LABEL[o.status]}</span>`}
+    </div>
+  </div>`;
+}
+function advance(id){
+  const o = DB.find(x=>x.id===id); if(!o) return;
+  const i = STATUSES.indexOf(o.status);
+  o.status = STATUSES[(i+1)%STATUSES.length];
+  if(o.status==="Executed" && !o.closedTs) o.closedTs = Date.now();
+  if(o.status===STATUSES[0]) o.closedTs = "";
+  saveLocal(); pushRemote([o],"obs"); renderActions();
+  toast(o.id + " → " + ST_LABEL[o.status]);
+}
+function esc(s){ return String(s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* ---------- walkers & certification (from WF.certification) ---------- */
+function tierOf(pts){
+  for(const t of TIERS) if(pts>=t.minPoints) return t;
+  return null;
+}
+function renderWalkers(){
+  const map = {};
+  WALKS.forEach(w=>{
+    if(!map[w.walker]) map[w.walker] = {walks:0, findings:0, pts:0};
+    map[w.walker].walks++; map[w.walker].findings += w.findings||0; map[w.walker].pts += w.total||0;
+  });
+  const rows = Object.entries(map).sort((a,b)=>b[1].pts-a[1].pts);
+  document.getElementById("walkerBoard").innerHTML = rows.length
+    ? rows.map(([name,s],i)=>{
+        const t = tierOf(s.pts);
+        return `<div class="wrow">
+          <div class="wrank">${i+1}</div>
+          <div class="wname"><b>${esc(name)}</b><small>${s.walks} walk${s.walks===1?"":"s"} · ${s.findings} findings${t?" · "+t.title:""}</small></div>
+          <span class="tier ${t?"t-"+t.tier:"t-none"}">${t?t.tier:"In training"}</span>
+          <div class="wpts">${s.pts}<small>points</small></div>
+        </div>`;}).join("")
+    : '<div class="empty">No completed walks yet. Certification starts with the first walk.</div>';
+}
+
+/* ---------- dashboard ---------- */
+function renderDash(){
+  const total = DB.length;
+  const closed = DB.filter(o=>o.status==="Executed"||o.status==="Verified");
+  document.getElementById("kWalks").textContent = WALKS.length;
+  document.getElementById("kFpw").textContent = WALKS.length ? (WALKS.reduce((a,w)=>a+(w.findings||0),0)/WALKS.length).toFixed(1) : "0";
+  document.getElementById("kClosure").textContent = total ? Math.round(closed.length/total*100)+"%" : "0%";
+  const dur = closed.filter(o=>o.closedTs).map(o=>(o.closedTs-o.ts)/864e5);
+  document.getElementById("kAvgDays").textContent = dur.length ? (dur.reduce((a,b)=>a+b,0)/dur.length).toFixed(1) : "—";
+  document.getElementById("kTotal").textContent = total;
+  document.getElementById("kOpen").textContent = DB.filter(o=>o.status===STATUSES[0]).length;
+  document.getElementById("kHigh").textContent = DB.filter(o=>o.priority==="High"&&o.status!=="Verified").length;
+  document.getElementById("kWalkers").textContent = new Set(WALKS.map(w=>w.walker)).size;
+
+  const PINE="#17302A", LANE="#F2A007", MOSS="#4C7A5E", SIG="#D64520";
+  Chart.defaults.font.family = "'Public Sans',sans-serif";
+  Chart.defaults.color = "#3C544D";
+
+  mk("cCat","bar",{labels:CATEGORIES,datasets:[{data:CATEGORIES.map(c=>DB.filter(o=>o.category===c).length),backgroundColor:LANE,borderRadius:5}]},
+     {indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{ticks:{precision:0},grid:{color:"#E2E8E0"}},y:{grid:{display:false}}}});
+
+  mk("cPri","doughnut",{labels:["High","Medium","Low"],datasets:[{data:["High","Medium","Low"].map(p=>DB.filter(o=>o.priority===p).length),backgroundColor:[SIG,LANE,MOSS],borderWidth:2,borderColor:"#fff"}]},
+     {cutout:"62%",plugins:{legend:{position:"bottom"}}});
+
+  mk("cSt","doughnut",{labels:STATUSES.map(s=>ST_LABEL[s]),datasets:[{data:STATUSES.map(s=>DB.filter(o=>o.status===s).length),backgroundColor:[SIG,LANE,MOSS,PINE],borderWidth:2,borderColor:"#fff"}]},
+     {cutout:"62%",plugins:{legend:{position:"bottom"}}});
+
+  const wk = 7*864e5, now = Date.now(), labels=[], obsN=[], walkN=[];
+  for(let i=7;i>=0;i--){
+    const a = now-(i+1)*wk, b = now-i*wk;
+    labels.push(new Date(b).toLocaleDateString(undefined,{day:"numeric",month:"short"}));
+    obsN.push(DB.filter(o=>o.ts>a&&o.ts<=b).length);
+    walkN.push(WALKS.filter(w=>w.ts>a&&w.ts<=b).length);
+  }
+  mk("cTrend","line",{labels,datasets:[
+      {label:"Findings",data:obsN,borderColor:PINE,backgroundColor:"rgba(242,160,7,.18)",fill:true,tension:.35,pointBackgroundColor:LANE,pointRadius:4,borderDash:[6,4]},
+      {label:"Walks",data:walkN,borderColor:MOSS,tension:.35,pointBackgroundColor:MOSS,pointRadius:3}]},
+     {plugins:{legend:{position:"bottom"}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:"#E2E8E0"}},x:{grid:{display:false}}}});
+
+  renderInsights();
+}
+function mk(id,type,data,options){
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id),{type,data,options:{maintainAspectRatio:false,responsive:true,...options}});
+}
+
+/* =====================================================================
+   MANAGEMENT INSIGHTS
+   Two sources, same schema:
+   1. In-browser statistics (always available, computed from live data)
+   2. analytics/analytics.json — produced nightly by the Python pipeline
+      (wise_analytics.py + GitHub Actions) with deeper statistics.
+   If the Python file exists, it takes precedence.
+===================================================================== */
+let ANALYTICS = null;
+
+async function loadAnalytics(){
+  if(!ORG_CONFIG.analyticsUrl) return;
+  try{
+    const r = await fetch(ORG_CONFIG.analyticsUrl + "?t=" + Date.now());
+    if(r.ok){ ANALYTICS = await r.json(); }
+  }catch(e){ /* no pipeline yet — JS fallback is used */ }
+}
+
+function quantile(sorted, q){
+  if(!sorted.length) return null;
+  const pos = (sorted.length-1)*q, base = Math.floor(pos), rest = pos-base;
+  return sorted[base+1]!==undefined ? sorted[base]+rest*(sorted[base+1]-sorted[base]) : sorted[base];
+}
+function linreg(ys){
+  const n = ys.length; if(n<2) return 0;
+  const xs = ys.map((_,i)=>i);
+  const mx = xs.reduce((a,b)=>a+b,0)/n, my = ys.reduce((a,b)=>a+b,0)/n;
+  let num=0, den=0;
+  for(let i=0;i<n;i++){ num += (xs[i]-mx)*(ys[i]-my); den += (xs[i]-mx)**2; }
+  return den ? num/den : 0;
+}
+
+function computeInsightsJS(){
+  const now = Date.now(), d = 864e5;
+  // closure statistics
+  const days = DB.filter(o=>o.closedTs).map(o=>(o.closedTs-o.ts)/d).sort((a,b)=>a-b);
+  // weekly series (12 weeks) + regression + forecast
+  const weekly = [];
+  for(let i=11;i>=0;i--){
+    const a = now-(i+1)*7*d, b = now-i*7*d;
+    weekly.push(DB.filter(o=>o.ts>a&&o.ts<=b).length);
+  }
+  const slope = linreg(weekly);
+  const last = weekly[weekly.length-1]||0;
+  let forecast = 0;
+  for(let k=1;k<=4;k++) forecast += Math.max(0, last + slope*k);
+  // Pareto
+  const counts = CATEGORIES.map(c=>({category:c, count:DB.filter(o=>o.category===c).length}))
+    .filter(x=>x.count>0).sort((a,b)=>b.count-a.count);
+  const tot = counts.reduce((a,x)=>a+x.count,0)||1;
+  let cum = 0;
+  const pareto = counts.map(x=>{ cum+=x.count; return {...x, cumPct:+(cum/tot*100).toFixed(1)}; });
+  // area risk index (open findings weighted High=3 / Med=2 / Low=1)
+  const W = {High:3, Medium:2, Low:1};
+  const open = DB.filter(o=>o.status==="Inspected"||o.status==="Solving");
+  const riskMap = {};
+  open.forEach(o=>{ riskMap[o.area] = (riskMap[o.area]||0) + (W[o.priority]||1); });
+  const areaRisk = Object.entries(riskMap).map(([area,score])=>({area,score})).sort((a,b)=>b.score-a.score);
+  // aging watchlist — open high-priority, oldest first
+  const aging = open.filter(o=>o.priority==="High")
+    .map(o=>({id:o.id, area:o.area, category:o.category, assignee:o.assignee, daysOpen:+((now-o.ts)/d).toFixed(1)}))
+    .sort((a,b)=>b.daysOpen-a.daysOpen).slice(0,8);
+  return {
+    source:"browser",
+    closure:{ medianDays: quantile(days,.5), p90Days: quantile(days,.9) },
+    trend:{ slopePerWeek:+slope.toFixed(2), forecastNext4Total: Math.round(forecast) },
+    pareto, areaRisk, aging
+  };
+}
+
+function renderInsights(){
+  const ins = ANALYTICS || computeInsightsJS();
+  const band = document.getElementById("aiBand");
+  if(ANALYTICS){
+    band.innerHTML = "Nightly Python analytics · generated <b>" +
+      (ANALYTICS.generatedAt ? new Date(ANALYTICS.generatedAt).toLocaleString() : "recently") + "</b>";
+  } else {
+    band.textContent = "Computed in-browser · connect the Python pipeline for nightly deep analytics";
+  }
+  const md = ins.closure && ins.closure.medianDays;
+  const p9 = ins.closure && ins.closure.p90Days;
+  document.getElementById("iMedian").textContent = md!=null ? (+md).toFixed(1) : "—";
+  document.getElementById("iP90").textContent = p9!=null ? (+p9).toFixed(1) : "—";
+  const sl = ins.trend ? ins.trend.slopePerWeek : null;
+  document.getElementById("iSlope").textContent = sl!=null ? (sl>0?"+":"")+(+sl).toFixed(2) : "—";
+  document.getElementById("iForecast").textContent = ins.trend && ins.trend.forecastNext4Total!=null ? "~"+ins.trend.forecastNext4Total : "—";
+
+  // Pareto chart — bars + cumulative % line (the vital few)
+  const p = ins.pareto || [];
+  mk("cPareto","bar",{
+    labels:p.map(x=>x.category),
+    datasets:[
+      {type:"bar", label:"Findings", data:p.map(x=>x.count), backgroundColor:"#F2A007", borderRadius:5, yAxisID:"y"},
+      {type:"line", label:"Cumulative %", data:p.map(x=>x.cumPct), borderColor:"#17302A", borderDash:[6,4], tension:.3, pointBackgroundColor:"#17302A", pointRadius:3, yAxisID:"y1"}
+    ]},
+    {plugins:{legend:{position:"bottom"}},
+     scales:{
+       y:{beginAtZero:true, ticks:{precision:0}, grid:{color:"#E2E8E0"}},
+       y1:{position:"right", min:0, max:100, ticks:{callback:v=>v+"%"}, grid:{display:false}},
+       x:{grid:{display:false}, ticks:{autoSkip:false, maxRotation:60, minRotation:40, font:{size:10}}}
+     }});
+
+  // Area risk index
+  const risks = ins.areaRisk || [];
+  const maxR = risks.length ? Math.max(...risks.map(r=>r.score)) : 1;
+  document.getElementById("riskList").innerHTML = risks.length
+    ? risks.map(r=>`<div class="riskrow"><span class="rname">${esc(r.area)}</span><span class="riskbar"><i style="width:${Math.round(r.score/maxR*100)}%"></i></span><span class="rval">${r.score}</span></div>`).join("")
+    : '<div class="empty">No open findings — all clear.</div>';
+
+  // Aging watchlist
+  const ag = ins.aging || [];
+  document.getElementById("ageList").innerHTML = ag.length
+    ? ag.map(a=>`<div class="agerow"><span><span class="aid">${esc(a.id)}</span> · ${esc(a.category)} · ${esc(a.area)}${a.assignee?" · → "+esc(a.assignee):""}</span><span class="adays">${(+a.daysOpen).toFixed(0)}d open</span></div>`).join("")
+    : '<div class="empty">No high-priority findings aging in the pipeline.</div>';
+}
+
+/* ---------- misc ---------- */
+let toastT;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("show"), 2400);
+}
+function renderAll(){ renderActions(); renderWalkList(); renderWalkers(); }
+
+/* ---------- init ---------- */
+renderFramework(); loadLocal(); seed(); buildCatChips(); buildFilters(); renderActions(); renderWalkers(); pullRemote(); loadAnalytics();
+</script>
+</body>
+</html>
