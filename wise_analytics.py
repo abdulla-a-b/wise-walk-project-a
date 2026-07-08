@@ -100,10 +100,20 @@ def weekly_trend(obs: pd.DataFrame, walks: pd.DataFrame, weeks: int = 12) -> dic
     }
 
 
+def _explode_categories(obs: pd.DataFrame) -> pd.DataFrame:
+    """A finding may carry multiple categories ("Safety, Quality").
+    Returns one row per (finding, category) pair."""
+    df = obs.copy()
+    df["category"] = df["category"].astype(str).str.split(",")
+    df = df.explode("category").reset_index(drop=True)
+    df["category"] = df["category"].str.strip()
+    return df[df["category"] != ""]
+
+
 def pareto(obs: pd.DataFrame) -> list:
     if obs.empty:
         return []
-    counts = obs["category"].value_counts()
+    counts = _explode_categories(obs)["category"].value_counts()
     total = int(counts.sum()) or 1
     out, cum = [], 0
     for cat, n in counts.items():
@@ -163,10 +173,12 @@ def walker_stats(walks: pd.DataFrame) -> list:
 
 
 def category_area_matrix(obs: pd.DataFrame) -> dict:
-    """Cross-tab of findings by category x area — where each problem type lives."""
+    """Cross-tab of findings by category x area — where each problem type lives.
+    Multi-category findings count once per category tag."""
     if obs.empty:
         return {"areas": [], "categories": [], "matrix": []}
-    ct = pd.crosstab(obs["category"], obs["area"])
+    ex = _explode_categories(obs)
+    ct = pd.crosstab(ex["category"], ex["area"])
     return {
         "areas": [str(a) for a in ct.columns],
         "categories": [str(c) for c in ct.index],
