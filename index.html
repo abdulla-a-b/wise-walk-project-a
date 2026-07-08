@@ -293,7 +293,7 @@ footer a{color:inherit;text-decoration:none}
       <!-- I — INSPECT -->
       <div class="stagehead"><span class="stagebadge">I</span><div><b>Inspect</b><br><small id="tagI"></small></div></div>
       <div class="stagebody">
-        <label class="f">Category</label>
+        <label class="f">Categories (select all that apply)</label>
         <div class="chips" id="catChips"></div>
         <label class="f">Priority</label>
         <div class="chips" id="priChips">
@@ -592,9 +592,16 @@ const TIERS = [...WF.certification].sort((a,b)=>b.minPoints-a.minPoints);
 
 let DB = [], WALKS = [];
 let walk = null, timerInt = null;
-let selCat = CATEGORIES[0], selPri = "Medium", photoData = "";
+let selCats = new Set(), selPri = "Medium", photoData = "";
 let fSt = "All", fCat = "All";
 let charts = {};
+
+/* A finding can carry multiple categories — stored as a comma-joined
+   string (sheet-friendly). obsCats() returns them as an array. */
+function obsCats(o){
+  if(Array.isArray(o.categories)) return o.categories;
+  return String(o.category||"").split(",").map(t=>t.trim()).filter(Boolean);
+}
 
 /* ---------- render the framework into the UI ---------- */
 function renderFramework(){
@@ -802,9 +809,13 @@ function submitWalk(){
 /* ---------- I · INSPECT — capture ---------- */
 function buildCatChips(){
   document.getElementById("catChips").innerHTML = CATEGORIES.map(c=>
-    `<button class="chip${c===selCat?" sel":""}" onclick="pickCat(this)" data-v="${c}">${c}</button>`).join("");
+    `<button class="chip${selCats.has(c)?" sel":""}" onclick="pickCat(this)" data-v="${c}" aria-pressed="${selCats.has(c)}">${c}</button>`).join("");
 }
-function pickCat(el){ selCat = el.dataset.v; buildCatChips(); }
+function pickCat(el){
+  const c = el.dataset.v;
+  selCats.has(c) ? selCats.delete(c) : selCats.add(c);
+  buildCatChips();
+}
 function pickPri(el){
   selPri = el.dataset.v;
   document.querySelectorAll("#priChips .chip").forEach(c=>c.classList.toggle("sel", c===el));
@@ -827,10 +838,11 @@ function loadPhoto(input){
 function addObservation(){
   const note = document.getElementById("oNote").value.trim();
   if(!note){ toast("I — describe what you inspected"); return; }
+  if(!selCats.size){ toast("Select at least one category"); return; }
   const o = {
     id:"WW-"+String(1000+DB.length)+"-"+Math.floor(Math.random()*90+10),
     ts:Date.now(), walker:walk.who, area:walk.area,
-    category:selCat, priority:selPri, note,
+    category:[...selCats].join(", "), priority:selPri, note,
     rootCause:document.getElementById("oCause").value.trim(),
     solution:document.getElementById("oSol").value.trim(),
     assignee:document.getElementById("oAssign").value.trim(),
@@ -842,6 +854,7 @@ function addObservation(){
   ["oNote","oCause","oSol","oAssign","oDue"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("oPhoto").value=""; photoData="";
   document.getElementById("photoPrev").style.display="none";
+  selCats.clear(); buildCatChips();
   renderWalkList(); toast("Captured — " + o.id + " enters the WISE pipeline");
 }
 function renderWalkList(){
@@ -862,7 +875,7 @@ function renderActions(){
   const q = (document.getElementById("q").value||"").toLowerCase();
   const rows = DB.filter(o =>
     (fSt==="All"||o.status===fSt) &&
-    (fCat==="All"||o.category===fCat) &&
+    (fCat==="All"||obsCats(o).includes(fCat)) &&
     (!q || (o.note+(o.rootCause||"")+o.solution+o.area+o.assignee+o.id).toLowerCase().includes(q)));
   document.getElementById("actionList").innerHTML =
     rows.length ? rows.map(o=>obsCard(o,true)).join("") : '<div class="empty">No findings match. Time for a walk?</div>';
@@ -887,7 +900,7 @@ function obsCard(o, actionable){
   return `<div class="obs pr-${o.priority}">
     <div class="obs-top">
       <span class="obs-id">${o.id}</span>
-      <span class="tag cat">${esc(o.category)}</span>
+      ${obsCats(o).map(c=>`<span class="tag cat">${esc(c)}</span>`).join("")}
       <span class="tag">${esc(o.area)}</span>
       <span class="tag">${o.priority}</span>
     </div>
@@ -958,7 +971,7 @@ function renderDash(){
   Chart.defaults.font.family = "'Public Sans',sans-serif";
   Chart.defaults.color = "#3C544D";
 
-  mk("cCat","bar",{labels:CATEGORIES,datasets:[{data:CATEGORIES.map(c=>DB.filter(o=>o.category===c).length),backgroundColor:LANE,borderRadius:5}]},
+  mk("cCat","bar",{labels:CATEGORIES,datasets:[{data:CATEGORIES.map(c=>DB.filter(o=>obsCats(o).includes(c)).length),backgroundColor:LANE,borderRadius:5}]},
      {indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{ticks:{precision:0},grid:{color:"#E2E8E0"}},y:{grid:{display:false}}}});
 
   mk("cPri","doughnut",{labels:["High","Medium","Low"],datasets:[{data:["High","Medium","Low"].map(p=>DB.filter(o=>o.priority===p).length),backgroundColor:[SIG,LANE,MOSS],borderWidth:2,borderColor:"#fff"}]},
@@ -1032,8 +1045,8 @@ function computeInsightsJS(){
   const last = weekly[weekly.length-1]||0;
   let forecast = 0;
   for(let k=1;k<=4;k++) forecast += Math.max(0, last + slope*k);
-  // Pareto
-  const counts = CATEGORIES.map(c=>({category:c, count:DB.filter(o=>o.category===c).length}))
+  // Pareto — multi-category aware: each category tag on a finding counts once
+  const counts = CATEGORIES.map(c=>({category:c, count:DB.filter(o=>obsCats(o).includes(c)).length}))
     .filter(x=>x.count>0).sort((a,b)=>b.count-a.count);
   const tot = counts.reduce((a,x)=>a+x.count,0)||1;
   let cum = 0;
